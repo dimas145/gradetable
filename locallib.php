@@ -34,7 +34,6 @@ define('ASSIGNFEEDBACK_GRADETABLE_MAXGRADER', 1);
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_feedback_gradetable extends assign_feedback_plugin {
-
     /**
      * Get the name of the grade table feedback plugin.
      *
@@ -45,12 +44,26 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
     }
 
     /**
-     * @param stdClass $grade Grade object.
-     * @param stdClass $data Form data.
-     * @return boolean
+     * @param int $userid Grade object.
+     * @param int $courseid Form data.
+     * @param int $assignmentid Form data.
+     * @return stdClass
      */
-    public function is_feedback_modified(stdClass $grade, stdClass $data) {
-        return false;   // TODO
+    public function get_submission_details(int $userid, int $courseid, int $assignmentid) {
+        $config = get_config('assignfeedback_gradetable');
+        $curl = new curl();
+        $url = get_string(
+            'urltemplate',
+            'local_integrate_autograding_system',
+            [
+                'url' => $config->bridge_service_url,
+                'endpoint' => "/submission/detail?userId=$userid&courseId=$courseid&assignmentId=$assignmentid"
+            ]
+        );
+
+        $curl->setHeader(array('Content-type: application/json'));
+        $curl->setHeader(array('Accept: application/json', 'Expect:'));
+        return json_decode($curl->get($url));
     }
 
     /**
@@ -60,15 +73,19 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      * @return string
      */
     public function display_table(stdClass $data) {
-        $table = new html_table();
-        $table->head = array('Reference', 'Feedback');
+        $result = '';
+        foreach ($data->submission as $submission) {
+            $table = new html_table();
+            $table->head = array('Reference', 'Feedback');
 
-        $table->data[] = array('test', '<a href="' . 'localhost:8085/ping' . '">Test</a>');
+            foreach ($submission->feedbacks as $feedback) {
+                $table->data[] = array($feedback->referenceName, $feedback->feedback);
+            }
 
-        $result = 'autograder1<br>';
-        $result .= html_writer::table($table);
-        $result .= '<br>autograder2<br>';
-        $result .= '<br>' . html_writer::table($table);
+            $result .= "Autograder: $submission->graderName<br>";
+            $result .= html_writer::table($table) . '<br>';
+        }
+
         return $result;
     }
 
@@ -80,7 +97,16 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      * @return string
      */
     public function view_summary(stdClass $grade, &$showviewlink) {
-        return display_table();
+        $data = get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id);
+        $count = count($data->submission);
+
+        $showviewlink = $count > ASSIGNFEEDBACK_GRADETABLE_MAXGRADER;
+
+        if ($showviewlink) {
+            return get_string('countgraders', 'assignfeedback_gradetable', $count);
+        } else {
+            return display_table($data);
+        }
     }
 
     /**
@@ -90,8 +116,7 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      * @return string
      */
     public function view(stdClass $grade) {
-        // $data = hit api bs
-        return display_table();
+        return display_table(get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id));
     }
 
     /**
@@ -110,6 +135,7 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      * @param stdClass $grade
      */
     public function is_empty(stdClass $grade) {
-        return false; // TODO
+        $data = get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id);
+        return count($data->submission) > 0;
     }
 }

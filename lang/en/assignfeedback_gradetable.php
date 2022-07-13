@@ -29,3 +29,6 @@ $string['enabled'] = 'Autograding feedback';
 $string['enabled_help'] = 'If enabled, bridge service will be able to automatically update feedback from autograders.';
 $string['gradetable'] = 'Autograder feedback';
 $string['pluginname'] = 'Autograding table feedback';
+$string['bridgeserviceurl'] = 'Bridge Service url';
+$string['bridgeserviceurldefault'] = 'http://advanced-autograder.my.id:8085';
+$string['urltemplate'] = '{$a->url}{$a->endpoint}';
