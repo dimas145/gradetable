@@ -97,7 +97,7 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      * @return string
      */
     public function view_summary(stdClass $grade, &$showviewlink) {
-        $data = get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id);
+        $data = $this->get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id);
         $count = count($data->submission);
 
         $showviewlink = $count > ASSIGNFEEDBACK_GRADETABLE_MAXGRADER;
@@ -105,7 +105,7 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
         if ($showviewlink) {
             return get_string('countgraders', 'assignfeedback_gradetable', $count);
         } else {
-            return display_table($data);
+            return $this->display_table($data);
         }
     }
 
@@ -116,7 +116,7 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      * @return string
      */
     public function view(stdClass $grade) {
-        return display_table(get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id));
+        return $this->display_table($this->get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id));
     }
 
     /**
@@ -135,7 +135,7 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      * @param stdClass $grade
      */
     public function is_empty(stdClass $grade) {
-        $data = get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id);
-        return count($data->submission) > 0;
+        $data = $this->get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id);
+        return count($data->submission) == 0 || !$data->success;
     }
 }
