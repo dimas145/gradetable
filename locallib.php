@@ -136,6 +136,6 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      */
     public function is_empty(stdClass $grade) {
         $data = $this->get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id);
-        return count($data->submission) == 0 || !$data->success;
+        return is_null($data) || !$data->success || count($data->submission) == 0;
     }
 }
