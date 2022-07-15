@@ -74,7 +74,7 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      */
     public function display_table(stdClass $data) {
         $result = '';
-        foreach ($data->submission as $submission) {
+        foreach ($data->result as $submission) {
             $table = new html_table();
             $table->head = array('Reference', 'Feedback');
 
@@ -99,7 +99,7 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      */
     public function view_summary(stdClass $grade, &$showviewlink) {
         $data = $this->get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id);
-        $count = count($data->submission);
+        $count = count($data->result);
 
         $showviewlink = $count > ASSIGNFEEDBACK_GRADETABLE_MAXGRADER;
 
@@ -137,6 +137,6 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      */
     public function is_empty(stdClass $grade) {
         $data = $this->get_submission_details($grade->userid, $this->assignment->get_instance()->course, $this->assignment->get_instance()->id);
-        return is_null($data) || !$data->success || count($data->submission) == 0;
+        return is_null($data) || !$data->success || count($data->result) == 0;
     }
 }
