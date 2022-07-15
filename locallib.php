@@ -83,6 +83,7 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
             }
 
             $result .= "Autograder: $submission->graderName<br>";
+            $result .= "Grade: $submission->grade<br>";
             $result .= html_writer::table($table) . '<br>';
         }
 
