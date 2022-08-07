@@ -50,11 +50,11 @@ class assign_feedback_gradetable extends assign_feedback_plugin {
      * @return stdClass
      */
     public function get_submission_details(int $userid, int $courseid, int $assignmentid) {
-        $config = get_config('assignfeedback_gradetable');
+        $config = get_config('local_integrate_autograding_system');
         $curl = new curl();
         $url = get_string(
             'urltemplate',
-            'assignfeedback_gradetable',
+            'local_integrate_autograding_system',
             [
                 'url' => $config->bridge_service_url,
                 'endpoint' => "/submission/detail?userId=$userid&courseId=$courseid&assignmentId=$assignmentid"

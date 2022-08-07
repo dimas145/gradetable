@@ -28,11 +28,3 @@ $settings->add(new admin_setting_configcheckbox(
     new lang_string('default_help', 'assignfeedback_gradetable'),
     1
 ));
-
-$settings->add(new admin_setting_configtext(
-    'assignfeedback_gradetable/bridge_service_url',
-    new lang_string('bridgeserviceurl', 'assignfeedback_gradetable'),
-    null,
-    new lang_string('bridgeserviceurldefault', 'assignfeedback_gradetable'),
-    PARAM_URL,
-));
